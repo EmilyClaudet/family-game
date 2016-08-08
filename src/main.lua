@@ -2,7 +2,8 @@ local STI = require "libs.STI"
 local avatar
 local playerX = 200
 local playerY = 200
-local speed = 200
+local speed = 160
+local world = love.physics.newWorld(0, 0)
 
 -- constants
 local DOWN = 2
@@ -49,11 +50,13 @@ end
 function love.draw()
     -- Draw world
     map:draw()
+    -- map:box2d_draw(map)
     map:setDrawRange(5, 5, 256, 256)
+	-- map:box2d_init(world)
     -- Draw player
     love.graphics.draw(avatar, playerX, playerY)
     -- Play music
-    music:play()
+    -- music:play()
 end
 
 function love.quit()
