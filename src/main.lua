@@ -1,8 +1,5 @@
 local STI = require "libs.STI"
 local avatar
-local frames = {}
-local activeFrame
-local cuurentFrame = 1
 local playerX = 200
 local playerY = 200
 local speed = 200
@@ -55,7 +52,7 @@ function love.draw()
     map:setDrawRange(5, 5, 256, 256)
     -- Draw player
     love.graphics.draw(avatar, playerX, playerY)
-    -- Play music and sound effects
+    -- Play music
     music:play()
 end
 
