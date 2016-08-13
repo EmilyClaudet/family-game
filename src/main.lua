@@ -1,8 +1,8 @@
 local STI = require "libs.STI"
 local avatar
-local player.X = 200
-local player.Y = 200
-local speed = 100
+local playerX = 200
+local playerY = 200
+local speed = 200
 local world = love.physics.newWorld(0, 0)
 local frames = {}
 local activeFrame
