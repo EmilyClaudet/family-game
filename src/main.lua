@@ -1,7 +1,8 @@
 local STI = require "libs.STI"
 local playerX = 200
 local playerY = 200
-local playerspeed = 200
+local playerspeed = 80
+local scale = 2
 local world = love.physics.newWorld(0, 0)
 local booboo = require("booboo") --adds booboo sprite data
 require "handling" --adds functions getinstance, updateinstance, drawinstance
@@ -21,7 +22,7 @@ function love.load()
 		char = booboo,
 		down = "down",
 		right = 'right',
-	  left = 'left',
+		left = 'left',
 		up = "up"
 	}
 end
@@ -35,20 +36,20 @@ function love.update(dt)
 	--update character position based on where player moves
 	--changes player animation through changing char element
 	if (love.keyboard.isDown(player.down)) then
-			player.char.curr_anim = player.char.curr_sprite["animations"]["down"]
-      player.y = player.y + (player.speed * dt)
+		player.char.curr_anim = player.char.curr_sprite["animations"]["down"]
+    player.y = player.y + (player.speed * dt)
   end
 	if (love.keyboard.isDown(player.right)) then
-			player.char.curr_anim = player.char.curr_sprite["animations"]["right"]
-      player.x = player.x + (player.speed * dt)
+		player.char.curr_anim = player.char.curr_sprite["animations"]["right"]
+    player.x = player.x + (player.speed * dt)
   end
 	if (love.keyboard.isDown(player.left)) then
-			player.char.curr_anim = player.char.curr_sprite["animations"]["left"]
-      player.x = player.x - (player.speed * dt)
+		player.char.curr_anim = player.char.curr_sprite["animations"]["left"]
+    player.x = player.x - (player.speed * dt)
   end
   if (love.keyboard.isDown(player.up)) then
-			player.char.curr_anim = player.char.curr_sprite["animations"]["up"]
-      player.y = player.y - (player.speed * dt)
+		player.char.curr_anim = player.char.curr_sprite["animations"]["up"]
+    player.y = player.y - (player.speed * dt)
   end
 
   if(love.keyboard.isDown('escape')) then
@@ -77,15 +78,16 @@ function love.keyreleased(key)
 end
 
 function love.draw()
-    -- Draw world
-    map:draw()
-    -- map:box2d_draw(map)
-    map:setDrawRange(5, 5, 256, 256)
-		-- map:box2d_init(world)
-    -- Draw player
-    drawinstance(player.char,player.x,player.y)
-    -- Play music
-    music:play()
+	love.graphics.scale(scale)
+  -- Draw world
+  map:draw()
+  -- map:box2d_draw(map)
+  map:setDrawRange(5, 5, 256, 256)
+	-- map:box2d_init(world)
+  -- Draw player
+  drawinstance(player.char,player.x,player.y)
+  -- Play music
+  music:play()
 end
 
 function love.quit()

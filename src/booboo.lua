@@ -3,13 +3,14 @@
 booboo = {}
 
 local avatar = love.graphics.newImage("res/images/avatar.png")
+avatar:setFilter( 'nearest', 'nearest' )    --Scales image so that pixels are sharp
 
 --table which returns all attributes of booboo sprite (quads,)
 function booboo.attributes()
   return {
     spritesheet = avatar,
     spritename = "booboo",
-    frameduration = 0.1,
+    frameduration = 0.13,
 
     animations = {
       downidle = {
