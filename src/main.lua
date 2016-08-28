@@ -10,7 +10,7 @@ require "handling" --adds functions getinstance, updateinstance, drawinstance
 function love.load()
 	-- load map file
 	map = STI.new("res/maps/house.lua", {"box2d"})
-	music = love.audio.newSource("res/audio/mrbluesky.mp3")
+	music = love.audio.newSource("res/audio/FinalDestinationBrawl.mp3")
 
 	booboo = getinstance(booboo.attributes())		--instatiates booboo sprite
 
