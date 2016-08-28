@@ -1,6 +1,6 @@
 local STI = require "libs.STI"
-local playerX = 200
-local playerY = 200
+local playerX = 320
+local playerY = 1088
 local playerspeed = 80
 local scale = 2
 local world = love.physics.newWorld(0, 0)
