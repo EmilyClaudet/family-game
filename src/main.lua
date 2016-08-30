@@ -11,6 +11,13 @@ local tilelength = 32
 local world = bump.newWorld()
 local wwidth = love.graphics.getWidth()
 local wheight = love.graphics.getHeight()
+
+--SHOULD STORE PER NPC!! Will be fixed
+local NPCoffsetx = 5
+local NPCoffsety = 2
+local NPCw = 20
+local NPCh = 30
+
 require "handling" --adds functions getinstance, updateinstance, drawinstance
 
 function findxy(index,width)
@@ -24,6 +31,7 @@ function love.load()
 	map = STI.new("res/maps/house.lua", {"box2d"})
 	music = love.audio.newSource("res/audio/FinalDestinationBrawl.mp3")
 
+--adding collisions for background
 	for n,layer in pairs(house.layers) do
 		if layer.properties["collidable"] then
 			for i,tile in pairs(layer.data) do
@@ -35,6 +43,12 @@ function love.load()
 				end
 			end
 		end
+	end
+
+--collisions for NPCs. Need custom widths!
+	for k, object in pairs(map.objects) do
+		NPC = {x = object.x+NPCoffsetx, y = object.y+NPCoffsety, w = NPCw, h = NPCh}
+		world:add(NPC, NPC.x, NPC.y-tilelength, NPC.w, NPC.h)
 	end
 
 	booboo = getinstance(booboo.attributes())		--instatiates booboo sprite
