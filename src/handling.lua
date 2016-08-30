@@ -9,8 +9,8 @@ function getinstance (sprite)
     curr_frame = 1,
     elapsed_time = 0,
     rotation = 0,
-    offset_x = 0,
-    offset_y = 0,
+    offset_x = 8, --Should fix so that offset is sprite dependent
+    offset_y = 4,
     flip_h = 1,   --set as either 1 or -1 (facing right or left respectively)
     flip_v = 1
   }

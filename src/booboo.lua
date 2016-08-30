@@ -11,6 +11,8 @@ function booboo.attributes()
     spritesheet = avatar,
     spritename = "booboo",
     frameduration = 0.13,
+    width = 17,
+    height = 28,
 
     animations = {
       downidle = {
