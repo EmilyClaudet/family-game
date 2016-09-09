@@ -71,43 +71,48 @@ function love.load()
       }
   }
 
+	player = spriteLayer.sprites.player
+--metatables to easily access booboo attributes
+	setmetatable(player, { __index = booboo })
+	setmetatable(booboo, { __index = booboo.curr_sprite})
+
 	world:add(
-		spriteLayer.sprites.player,
-		spriteLayer.sprites.player.x,
-		spriteLayer.sprites.player.y,
-		spriteLayer.sprites.player.char.curr_sprite.width,
-		spriteLayer.sprites.player.char.curr_sprite.height)
+		player,
+		player.x,
+		player.y,
+		player.width,
+		player.height)
 end
 
 function love.update(dt)
 	-- Update world
 	map:update(dt)
 	--Update player character
-	updateinstance(spriteLayer.sprites.player.char, dt)
+	updateinstance(player.char, dt)
 
 	--update character position based on where player moves
 	--changes player animation through changing char element
 	local dx,dy = 0,0
-	if (love.keyboard.isDown(spriteLayer.sprites.player.down)) then
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["down"]
-    dy = spriteLayer.sprites.player.speed * dt
+	if (love.keyboard.isDown(player.down)) then
+		player.char.curr_anim = player.animations["down"]
+    dy = player.speed * dt
   end
-	if (love.keyboard.isDown(spriteLayer.sprites.player.right)) then
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["right"]
-    dx = spriteLayer.sprites.player.speed * dt
+	if (love.keyboard.isDown(player.right)) then
+		player.char.curr_anim = player.animations["right"]
+    dx = player.speed * dt
   end
-	if (love.keyboard.isDown(spriteLayer.sprites.player.left)) then
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["left"]
-    dx = -spriteLayer.sprites.player.speed * dt
+	if (love.keyboard.isDown(player.left)) then
+		player.char.curr_anim = player.animations["left"]
+    dx = -player.speed * dt
   end
-  if (love.keyboard.isDown(spriteLayer.sprites.player.up)) then
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["up"]
-    dy = -spriteLayer.sprites.player.speed * dt
+  if (love.keyboard.isDown(player.up)) then
+		player.char.curr_anim = player.animations["up"]
+    dy = -player.speed * dt
   end
 
 	if dx ~= 0 or dy ~= 0 then
     local cols
-    spriteLayer.sprites.player.x, spriteLayer.sprites.player.y, cols, cols_len = world:move(spriteLayer.sprites.player, spriteLayer.sprites.player.x + dx, spriteLayer.sprites.player.y + dy)
+    player.x, player.y, cols, cols_len = world:move(player, player.x + dx, player.y + dy)
     for i=1, cols_len do
 			local col = cols[i]
 		end
@@ -120,32 +125,32 @@ end
 
 function love.keyreleased(key)
 --puts character in idle state if player releases walking keys.
-	if key == spriteLayer.sprites.player.down then
-		spriteLayer.sprites.player.char.curr_frame = 1
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["downidle"]
+	if key == player.down then
+		player.char.curr_frame = 1
+		player.char.curr_anim = player.animations["downidle"]
 	end
-	if key == spriteLayer.sprites.player.right then
-		spriteLayer.sprites.player.char.curr_frame = 1
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["rightidle"]
+	if key == player.right then
+		player.char.curr_frame = 1
+		player.char.curr_anim = player.animations["rightidle"]
 	end
-	if key == spriteLayer.sprites.player.left then
-		spriteLayer.sprites.player.char.curr_frame = 1
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["leftidle"]
+	if key == player.left then
+		player.char.curr_frame = 1
+		player.char.curr_anim = player.animations["leftidle"]
 	end
-	if key == spriteLayer.sprites.player.up then
-		spriteLayer.sprites.player.char.curr_frame = 1
-		spriteLayer.sprites.player.char.curr_anim = spriteLayer.sprites.player.char.curr_sprite["animations"]["upidle"]
+	if key == player.up then
+		player.char.curr_frame = 1
+		player.char.curr_anim = player.animations["upidle"]
 	end
 end
 
 function love.draw()
 	love.graphics.scale(scale)
-	love.graphics.translate( (wwidth/4 - spriteLayer.sprites.player.x), (wheight/4 - spriteLayer.sprites.player.y) )
+	love.graphics.translate( (wwidth/4 - player.x), (wheight/4 - player.y) )
   -- Draw world
   map:draw()
   map:setDrawRange(5, 5, 256, 256)
   -- Draw player
-  drawinstance(spriteLayer.sprites.player.char, spriteLayer.sprites.player.x, spriteLayer.sprites.player.y)
+  drawinstance(player.char, player.x, player.y)
 	-- Play music
   music:play()
 end
