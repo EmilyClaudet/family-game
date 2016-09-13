@@ -10,68 +10,43 @@ local tilelength = 32
 local world = bump.newWorld()
 local wwidth = love.graphics.getWidth()
 local wheight = love.graphics.getHeight()
+local NPC = require("NPC")
+local dialogue = require("dialogue")
+continue = false
 
---SHOULD STORE PER NPC!! Will be fixed
-local NPCoffsetx = 5
-local NPCoffsety = 2
-local NPCw = 20
-local NPCh = 30
 
 require "handling" --adds functions getinstance, updateinstance, drawinstance
+require "collision"
 
-function findxy(index,width)
-	row = math.floor(index/width)
-	col = math.fmod(index,width) - 1
-	return {xpos = col*tilelength, ypos = row*tilelength}
-end
+printedText = ""
+TimerMax = 0.1
+typeTimer = 0.1
+typePosition = 0
+counter = {}
+i = 1
 
 function love.load()
 	-- load map file
 	map = STI.new("res/maps/house.lua", {"box2d"})
 	music = love.audio.newSource("res/audio/FinalDestinationBrawl.mp3")
-
---adding collisions for background
-	for n,layer in pairs(house.layers) do
-		if layer.properties["collidable"] then
-			for i,tile in pairs(layer.data) do
-				if tile > 0 then
-					tilex = findxy(i,layer.width).xpos
-					tiley = findxy(i,layer.width).ypos
-					block = {x = tilex, y = tiley, w = tilelength, h = tilelength}
-					world:add(block, block.x, block.y, block.w, block.h)
-				end
-			end
-		end
-	end
-
---collisions for NPCs. Need custom widths!
-	for k, object in pairs(map.objects) do
-		NPC = {x = object.x+NPCoffsetx, y = object.y+NPCoffsety, w = NPCw, h = NPCh}
-		world:add(NPC, NPC.x, NPC.y-tilelength, NPC.w, NPC.h)
-	end
+	collisions(world,house,map,tilelength)
 
 	booboo = getinstance(booboo.attributes())		--instatiates booboo sprite
 
--- Create a Custom Layer
-  map:addCustomLayer("Player Layer", 3)
--- Add data to Custom Layer
-  spriteLayer = map.layers["Player Layer"]
-  spriteLayer.sprites = {
-      player = {
-						x = playerX,
-						y = playerY,
-						w = tilelength,
-						h = tilelength,
-						speed = playerspeed,
-						char = booboo,
-						down = "down",
-						right = 'right',
-						left = 'left',
-						up = "up"
-      }
-  }
+  player = {
+				x = playerX,
+				y = playerY,
+				w = tilelength,
+				h = tilelength,
+				speed = playerspeed,
+				char = booboo,
+				down = "down",
+				right = 'right',
+				left = 'left',
+				up = "up",
+				control = true
+    }
 
-	player = spriteLayer.sprites.player
 --metatables to easily access booboo attributes
 	setmetatable(player, { __index = booboo })
 	setmetatable(booboo, { __index = booboo.curr_sprite})
@@ -82,6 +57,8 @@ function love.load()
 		player.y,
 		player.width,
 		player.height)
+
+	welcome = dialogue:new("welcome",{"Hello my Booboo","How are you today?","This is the Terrace"})
 end
 
 function love.update(dt)
@@ -110,13 +87,8 @@ function love.update(dt)
     dy = -player.speed * dt
   end
 
-	if dx ~= 0 or dy ~= 0 then
-    local cols
-    player.x, player.y, cols, cols_len = world:move(player, player.x + dx, player.y + dy)
-    for i=1, cols_len do
-			local col = cols[i]
-		end
-	end
+	move(world,player,dx,dy)
+	welcome:printText(dt,1)
 
   if(love.keyboard.isDown('escape')) then
       love.event.quit()
@@ -141,6 +113,7 @@ function love.keyreleased(key)
 		player.char.curr_frame = 1
 		player.char.curr_anim = player.animations["upidle"]
 	end
+
 end
 
 function love.draw()
@@ -152,7 +125,13 @@ function love.draw()
   -- Draw player
   drawinstance(player.char, player.x, player.y)
 	-- Play music
-  music:play()
+--  music:play()
+	love.graphics.setColor(255,255,255,255)
+	if printedText ~= "" then
+		love.graphics.rectangle("fill", player.x - wwidth/4 + 10, player.y + wheight/8, wwidth/2 - 20, wheight/16, 2, 2)
+	end
+	love.graphics.setColor(0,0,0,255)
+	love.graphics.print(printedText, player.x - wwidth/4 + 15, player.y + wheight/8 + 16)
 end
 
 function love.quit()
