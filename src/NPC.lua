@@ -33,8 +33,17 @@ function NPC:turn(dir)
   self.facing = direction.dir
 end
 
-function NPC:speak(dialogue)
-
+function NPC:speak(player,dialogue,dt)
+  dialogue.printText(dt)
+  if player.curr_anim == player.animations["downidle"] then
+    NPC.turn(up)
+  elseif player.curr_anim == player.animations["upidle"] then
+    NPC.turn(down)
+  elseif player.curr_anim == player.animations["leftidle"] then
+    NPC.turn(right)
+  elseif player.curr_anim == player.animations["rightidle"] then
+    NPC.turn(left)
+  end
 end
 
 return NPC

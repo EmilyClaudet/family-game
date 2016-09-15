@@ -13,13 +13,9 @@ function dialogue:new(title,text)
 end
 
 function dialogue:printText(dt)
---[[	for j = 1,#self.text do
-		continue = true
-		while continue do
-]]
 
 			if love.keyboard.isDown("space") then
---				continue = false
+        messageBox.on = true
 				continue = true
 				table.insert(counter,1)
 				if #counter == 1 then typePosition = 0 end
@@ -34,6 +30,7 @@ function dialogue:printText(dt)
 				end
 			elseif continue then
 				printedText = ""
+        messageBox.on = false
 			end
 
 			if i <= #self.text then
@@ -44,13 +41,12 @@ function dialogue:printText(dt)
 				end
 			end
 		end
---[[
-		end
-		continue = true
-		printedText = ""
-		typePosition = 0
-	end
-]]
 
+function dialogue:messageBox(player,wwidth,wheight)
+  messageBox.x = player.x - wwidth/4 + 10
+	messageBox.y = player.y + wheight/8
+	messageBox.w = wwidth/2 - 20
+	messageBox.h = wheight/16
+end
 
 return dialogue

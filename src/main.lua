@@ -12,17 +12,17 @@ local wwidth = love.graphics.getWidth()
 local wheight = love.graphics.getHeight()
 local NPC = require("NPC")
 local dialogue = require("dialogue")
-continue = false
-
 
 require "handling" --adds functions getinstance, updateinstance, drawinstance
 require "collision"
 
+messageBox = {on = false, x = 0, y = 0, w = 0, h = 0}
 printedText = ""
 TimerMax = 0.1
 typeTimer = 0.1
 typePosition = 0
 counter = {}
+continue = false
 i = 1
 
 function love.load()
@@ -58,7 +58,9 @@ function love.load()
 		player.width,
 		player.height)
 
-	welcome = dialogue:new("welcome",{"Hello my Booboo","How are you today?","This is the Terrace"})
+	welcome = dialogue:new("welcome",
+	{"Hello my Booboo","How are you today?","This is the Terrace"}
+	)
 end
 
 function love.update(dt)
@@ -88,11 +90,16 @@ function love.update(dt)
   end
 
 	move(world,player,dx,dy)
-	welcome:printText(dt,1)
 
   if(love.keyboard.isDown('escape')) then
       love.event.quit()
   end
+
+	if i <= #welcome.text then
+		welcome:printText(dt)
+	else
+		i = 1
+	end
 end
 
 function love.keyreleased(key)
@@ -127,8 +134,9 @@ function love.draw()
 	-- Play music
 --  music:play()
 	love.graphics.setColor(255,255,255,255)
-	if printedText ~= "" then
-		love.graphics.rectangle("fill", player.x - wwidth/4 + 10, player.y + wheight/8, wwidth/2 - 20, wheight/16, 2, 2)
+	if messageBox.on then
+		welcome:messageBox(player,wwidth,wheight)
+		love.graphics.rectangle("fill", messageBox.x, messageBox.y, messageBox.w, messageBox.h, 2, 2)
 	end
 	love.graphics.setColor(0,0,0,255)
 	love.graphics.print(printedText, player.x - wwidth/4 + 15, player.y + wheight/8 + 16)
