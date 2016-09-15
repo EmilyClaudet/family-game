@@ -6,24 +6,19 @@ local house = require "house"
 local playerspeed = 80
 local scale = 2
 local booboo = require("booboo") --adds booboo sprite data
+local textobj = require("textobj")
 local tilelength = 32
 local world = bump.newWorld()
 local wwidth = love.graphics.getWidth()
 local wheight = love.graphics.getHeight()
 local NPC = require("NPC")
-local dialogue = require("dialogue")
+--local dialogue = require("dialogue")
 
 require "handling" --adds functions getinstance, updateinstance, drawinstance
+require "texthandling"
 require "collision"
 
 messageBox = {on = false, x = 0, y = 0, w = 0, h = 0}
-printedText = ""
-TimerMax = 0.1
-typeTimer = 0.1
-typePosition = 0
-counter = {}
-continue = false
-i = 1
 
 function love.load()
 	-- load map file
@@ -32,6 +27,7 @@ function love.load()
 	collisions(world,house,map,tilelength)
 
 	booboo = getinstance(booboo.attributes())		--instatiates booboo sprite
+	welcome = textInstance(textobj.attributes())
 
   player = {
 				x = playerX,
@@ -58,9 +54,9 @@ function love.load()
 		player.width,
 		player.height)
 
-	welcome = dialogue:new("welcome",
+--[[	welcome = dialogue:new("welcome",
 	{"Hello my Booboo","How are you today?","This is the Terrace"}
-	)
+	)]]
 end
 
 function love.update(dt)
@@ -68,6 +64,7 @@ function love.update(dt)
 	map:update(dt)
 	--Update player character
 	updateinstance(player.char, dt)
+	textUpdate(welcome, dt)
 
 	--update character position based on where player moves
 	--changes player animation through changing char element
@@ -95,11 +92,6 @@ function love.update(dt)
       love.event.quit()
   end
 
-	if i <= #welcome.text then
-		welcome:printText(dt)
-	else
-		i = 1
-	end
 end
 
 function love.keyreleased(key)
@@ -134,12 +126,11 @@ function love.draw()
 	-- Play music
 --  music:play()
 	love.graphics.setColor(255,255,255,255)
-	if messageBox.on then
+--[[	if messageBox.on then
 		welcome:messageBox(player,wwidth,wheight)
 		love.graphics.rectangle("fill", messageBox.x, messageBox.y, messageBox.w, messageBox.h, 2, 2)
-	end
-	love.graphics.setColor(0,0,0,255)
-	love.graphics.print(printedText, player.x - wwidth/4 + 15, player.y + wheight/8 + 16)
+	end]]
+	textDraw(welcome,player,wwidth,wheight)
 end
 
 function love.quit()
