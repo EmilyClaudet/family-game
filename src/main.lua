@@ -38,9 +38,16 @@ function defineEmily(map)
 		if object.name == "Emily" then
 			emilyPos = {x = object.x, y = object.y}
 			emilydialogue = textobj:new({
-					"Hello my Booboo",
-					"How are you today?",
-					"I'm hungry. I'm going to eat you."
+				"Hello my Booboo.",
+				"How are you today?",
+				"I'm hungry. Can I eat you?"
+			},
+			{
+				on = true,
+				topchoice = "yes",
+				bottomchoice = "no",
+				topresponse = {"Oh really?","I will come to get you soon then!"},
+				bottomresponse = {"But why not my Booboo?","You look so tasty."}
 			})
 			emily = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
 		end
@@ -115,22 +122,6 @@ function love.keyreleased(key)
 		player:standup()
 	end
 	end
-
---Updates which line NPC says
---[[	if key == "space" and checkcollision(player.dialoguebox, emilyNPC.dialoguebox) then
-		emilydialogue.start = true
-		player.control = false
-		if emilydialogue.curr_let == emilydialogue.curr_linelen and key == "space" then
-			emilydialogue.curr_let = 0
-			emilydialogue.curr_line = emilydialogue.curr_line + 1
-			if emilydialogue.curr_line > emilydialogue.numberofLines then
-				emilydialogue.start = false
-				emilydialogue.curr_line = 1
-				player.control = true
-			end
-			emilydialogue.curr_linelen = string.len(emilydialogue.lines[emilydialogue.curr_line])
-		end
-	end]]
 
 	emily:speak(player,key)
 end

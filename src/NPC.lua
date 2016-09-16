@@ -39,21 +39,51 @@ function NPC:turn(dir)
 end
 
 function NPC:speak(player,key)
-  if key == "space" and checkcollision(player.dialoguebox, self.dialoguebox) then
-    self.dialogue.start = true
-    player.control = false
-    if self.dialogue.curr_let == self.dialogue.curr_linelen and key == "space" then
-      self.dialogue.curr_let = 0
-      self.dialogue.curr_line = self.dialogue.curr_line + 1
-      if self.dialogue.curr_line > self.dialogue.numberofLines then
-        self.dialogue.start = false
-        self.dialogue.curr_line = 1
-        player.control = true
-      end
-      self.dialogue.curr_linelen = string.len(self.dialogue.lines[self.dialogue.curr_line])
+  if key == "space" and self.dialogue.drawdecisionbox then
+    if player.cursor.yoff == 45 then
+      self.dialogue.lines = self.dialogue.topresponse
+    else
+      self.dialogue.lines = self.dialogue.bottomresponse
     end
+    self.dialogue.curr_line = 1
+    self.dialogue.curr_let = 0
+    self.dialogue.drawdecisionbox = false
+    self.dialogue.isDecision = false
+    self.dialogue.numberofLines = #self.dialogue.lines
   end
 
+  if key == "space" and checkcollision(player.dialoguebox, self.dialoguebox) and self.dialogue.drawdecisionbox == false then
+    self.dialogue.start = true
+    player.control = false
+    --checks if whole message has been typed. If player then presses space message goes to next line.
+    if self.dialogue.curr_let == string.len(self.dialogue.lines[self.dialogue.curr_line]) and key == "space" then
+      self.dialogue.curr_let = 0
+      self.dialogue.curr_line = self.dialogue.curr_line + 1
+      --if next line does not exist dialogue stops and current line reset for next dialogue triggered.
+      if self.dialogue.curr_line > self.dialogue.numberofLines then
+        --for decision
+        if self.dialogue.isDecision then
+          self.dialogue.curr_line = self.dialogue.numberofLines
+          self.dialogue.curr_let = string.len(self.dialogue.lines[self.dialogue.curr_line])
+          self.dialogue.drawdecisionbox = true
+        else
+          self.dialogue.start = false
+          self.dialogue.curr_line = 1
+          player.control = true
+        end
+      end
+      --update last letter in line each time line is changed
+      --self.dialogue.curr_linelen = string.len(self.dialogue.lines[self.dialogue.curr_line])
+    end
+  elseif key == "down" and self.dialogue.drawdecisionbox and player.cursor.movedown then
+    player.cursor.yoff = player.cursor.yoff + 30
+    player.cursor.movedown = false
+    player.cursor.moveup = true
+  elseif key == "up" and self.dialogue.drawdecisionbox and player.cursor.moveup then
+    player.cursor.yoff = player.cursor.yoff - 30
+    player.cursor.movedown = true
+    player.cursor.moveup = false
+  end
 end
 
 return NPC
