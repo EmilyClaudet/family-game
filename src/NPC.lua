@@ -1,23 +1,27 @@
-
-direction = {
-  down = love.graphics.newQuad(0, 0, 32, 32, 32, 96),
-  up = love.graphics.newQuad(0, 32, 32, 32, 32, 96),
-  left = love.graphics.newQuad(0, 64, 32, 32, 32, 96),
-  right = love.graphics.newQuad(0, 96, 32, 32, 32, 96)
-}
+--NPC class for future use
 
 NPC = {}
 
-function NPC:new(x,y,v,xoff,yoff,w,h,spritesheet)
+function NPC:new(x,y,v,xoff,yoff,w,h) --will include spritesheet later
+  directions = {
+    down = love.graphics.newQuad(0, 0, 32, 32, 32, 96),
+    up = love.graphics.newQuad(0, 32, 32, 32, 32, 96),
+    left = love.graphics.newQuad(0, 64, 32, 32, 32, 96),
+    right = love.graphics.newQuad(0, 96, 32, 32, 32, 96)
+  }
+
   o = {
     x = x,
     y = y,
     v = v,
     xoff = xoff,
+    yoff = yoff,
     w = w,
     h = h,
+    directions = directions,
     images = spritesheet,
-    facing = direction.down
+    facing = directions.down,
+    dialoguebox = {x = x + xoff, y = y + yoff - 32, w = w, h = h}
   }
   setmetatable(o, self)
   self.__index = self
@@ -30,7 +34,7 @@ function NPC:move(x,y)
 end
 
 function NPC:turn(dir)
-  self.facing = direction.dir
+  self.facing = directions.dir
 end
 
 function NPC:speak(player,dialogue,dt)
