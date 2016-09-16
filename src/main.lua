@@ -1,6 +1,6 @@
 local STI = require "libs.STI"
 local bump = require "bump"
-local house = require "house"
+local house = require "..res.maps.house"
 
 local player = require("player") --adds player class
 local textobj = require("textobj") --adds dialogue class
@@ -24,6 +24,29 @@ local wheight = love.graphics.getHeight()
 
 require "collision"
 
+--returns true if a collision between box1 and 2 occurs
+function checkcollision(box1, box2)
+  return box1.x < box2.x + box2.w and
+         box2.x < box1.x + box1.w and
+         box1.y < box2.y + box2.h and
+         box2.y < box1.y + box1.h
+end
+
+--defines Emily as an NPC from data from the map. Will update when spritesheet comes
+function defineEmily(map)
+	for k, object in pairs(map.objects) do
+		if object.name == "Emily" then
+			emilyPos = {x = object.x, y = object.y}
+			emilydialogue = textobj:new({
+					"Hello my Booboo",
+					"How are you today?",
+					"I'm hungry. I'm going to eat you."
+			})
+			emily = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
+		end
+	end
+end
+
 function love.load()
 	-- load map file
 	map = STI.new("res/maps/house.lua", {"box2d"})
@@ -42,21 +65,7 @@ function love.load()
 		player.w,
 		player.h) --adds player as collidable object in world
 
---defines emily NPC
-	for k, object in pairs(map.objects) do
-		if object.name == "Emily" then
-			emilyPos = {x = object.x, y = object.y}
-			emilyNPC = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh)
-		end
-	end
-
---defines emily dialogue. should group this into emilyNPC object somehow
-	emilydialogue = textobj:new({
-	    "Hello my Booboo",
-	    "How are you today?",
-	    "I'm hungry. I'm going to eat you."
-	})
-
+	defineEmily(map)
 end
 
 function love.update(dt)
@@ -65,35 +74,22 @@ function love.update(dt)
 	--Update player character
 	player:updateinstance(dt)
 	--Update text
-	emilydialogue:textUpdate(dt)
-
+	emily.dialogue:textUpdate(dt)
 	--update character position based on where player moves
 	--redefines player's collision box for dialogue depending on which way he faces
 	local dx,dy = 0,0
 	if player.control then
 	if (love.keyboard.isDown(player.down)) then
-		player.curr_anim = player.animations["down"]
-		player.dialoguebox.x = player.x
-		player.dialoguebox.y = player.y + player.h
-    dy = player.speed * dt
-  end
+		dy = player:walkdown(dy,dt)
+	end
 	if (love.keyboard.isDown(player.right)) then
-		player.curr_anim = player.animations["right"]
-		player.dialoguebox.x = player.x + player.w
-		player.dialoguebox.y = player.y
-    dx = player.speed * dt
+		dx = player:walkright(dx,dt)
   end
 	if (love.keyboard.isDown(player.left)) then
-		player.curr_anim = player.animations["left"]
-		player.dialoguebox.x = player.x - player.w
-		player.dialoguebox.y = player.y
-    dx = -player.speed * dt
+		dx = player:walkleft(dx,dt)
   end
   if (love.keyboard.isDown(player.up)) then
-		player.curr_anim = player.animations["up"]
-		player.dialoguebox.x = player.x
-		player.dialoguebox.y = player.y - player.h
-    dy = -player.speed * dt
+		dy = player:walkup(dy,dt)
   end
 	end
 	move(world,player,dx,dy)
@@ -103,37 +99,25 @@ function love.update(dt)
   end
 end
 
---returns true if a collision between box1 and 2 occurs
-function checkcollision(box1, box2)
-  return box1.x < box2.x + box2.w and
-         box2.x < box1.x + box1.w and
-         box1.y < box2.y + box2.h and
-         box2.y < box1.y + box1.h
-end
-
 function love.keyreleased(key)
 --puts character in idle state if player releases walking keys.
 	if player.control then
 	if key == player.down then
-		player.curr_frame = 1
-		player.curr_anim = player.animations["downidle"]
+		player:standdown()
 	end
 	if key == player.right then
-		player.curr_frame = 1
-		player.curr_anim = player.animations["rightidle"]
+		player:standright()
 	end
 	if key == player.left then
-		player.curr_frame = 1
-		player.curr_anim = player.animations["leftidle"]
+		player:standleft()
 	end
 	if key == player.up then
-		player.curr_frame = 1
-		player.curr_anim = player.animations["upidle"]
+		player:standup()
 	end
 	end
 
 --Updates which line NPC says
-	if key == "space" and checkcollision(player.dialoguebox, emilyNPC.dialoguebox) then
+--[[	if key == "space" and checkcollision(player.dialoguebox, emilyNPC.dialoguebox) then
 		emilydialogue.start = true
 		player.control = false
 		if emilydialogue.curr_let == emilydialogue.curr_linelen and key == "space" then
@@ -146,8 +130,9 @@ function love.keyreleased(key)
 			end
 			emilydialogue.curr_linelen = string.len(emilydialogue.lines[emilydialogue.curr_line])
 		end
-	end
+	end]]
 
+	emily:speak(player,key)
 end
 
 function love.draw()

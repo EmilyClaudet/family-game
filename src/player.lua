@@ -106,4 +106,52 @@ function player:drawinstance()
   )
 end
 
+function player:walkdown(dy,dt)
+  self.curr_anim = self.animations["down"]
+  self.dialoguebox.x = self.x
+  self.dialoguebox.y = self.y + self.h
+  return self.speed * dt
+end
+
+function player:walkright(dx,dt)
+  self.curr_anim = self.animations["right"]
+  self.dialoguebox.x = self.x + self.w
+  self.dialoguebox.y = self.y
+  return self.speed * dt
+end
+
+function player:walkleft(dx,dt)
+  self.curr_anim = self.animations["left"]
+  self.dialoguebox.x = self.x - self.w
+  self.dialoguebox.y = self.y
+  return -self.speed * dt
+end
+
+function player:walkup(dy,dt)
+  self.curr_anim = self.animations["up"]
+  self.dialoguebox.x = self.x
+  self.dialoguebox.y = self.y - self.h
+  return -self.speed * dt
+end
+
+function player:standdown()
+  self.curr_frame = 1
+  self.curr_anim = self.animations["downidle"]
+end
+
+function player:standright()
+  self.curr_frame = 1
+  self.curr_anim = self.animations["rightidle"]
+end
+
+function player:standleft()
+  self.curr_frame = 1
+  self.curr_anim = self.animations["leftidle"]
+end
+
+function player:standup()
+  self.curr_frame = 1
+  self.curr_anim = self.animations["upidle"]
+end
+
 return player

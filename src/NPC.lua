@@ -2,7 +2,7 @@
 
 NPC = {}
 
-function NPC:new(x,y,v,xoff,yoff,w,h) --will include spritesheet later
+function NPC:new(x,y,v,xoff,yoff,w,h,dialogue) --will include spritesheet later
   directions = {
     down = love.graphics.newQuad(0, 0, 32, 32, 32, 96),
     up = love.graphics.newQuad(0, 32, 32, 32, 32, 96),
@@ -21,6 +21,7 @@ function NPC:new(x,y,v,xoff,yoff,w,h) --will include spritesheet later
     directions = directions,
     images = spritesheet,
     facing = directions.down,
+    dialogue = dialogue,
     dialoguebox = {x = x + xoff, y = y + yoff - 32, w = w, h = h}
   }
   setmetatable(o, self)
@@ -37,17 +38,22 @@ function NPC:turn(dir)
   self.facing = directions.dir
 end
 
-function NPC:speak(player,dialogue,dt)
-  dialogue.printText(dt)
-  if player.curr_anim == player.animations["downidle"] then
-    NPC.turn(up)
-  elseif player.curr_anim == player.animations["upidle"] then
-    NPC.turn(down)
-  elseif player.curr_anim == player.animations["leftidle"] then
-    NPC.turn(right)
-  elseif player.curr_anim == player.animations["rightidle"] then
-    NPC.turn(left)
+function NPC:speak(player,key)
+  if key == "space" and checkcollision(player.dialoguebox, self.dialoguebox) then
+    self.dialogue.start = true
+    player.control = false
+    if self.dialogue.curr_let == self.dialogue.curr_linelen and key == "space" then
+      self.dialogue.curr_let = 0
+      self.dialogue.curr_line = self.dialogue.curr_line + 1
+      if self.dialogue.curr_line > self.dialogue.numberofLines then
+        self.dialogue.start = false
+        self.dialogue.curr_line = 1
+        player.control = true
+      end
+      self.dialogue.curr_linelen = string.len(self.dialogue.lines[self.dialogue.curr_line])
+    end
   end
+
 end
 
 return NPC
