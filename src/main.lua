@@ -12,10 +12,10 @@ local world = bump.newWorld()
 local wwidth = love.graphics.getWidth()
 local wheight = love.graphics.getHeight()
 local NPC = require("NPC")
---local dialogue = require("dialogue")
+local textobj = require("textobj")
 
 require "handling" --adds functions getinstance, updateinstance, drawinstance
-require "texthandling"
+--require "texthandling"
 require "collision"
 
 messageBox = {on = false, x = 0, y = 0, w = 0, h = 0}
@@ -27,7 +27,11 @@ function love.load()
 	collisions(world,house,map,tilelength)
 
 	booboo = getinstance(booboo.attributes())		--instatiates booboo sprite
-	welcome = textInstance(textobj.attributes())
+	text = textobj:new({
+	    "Hello my Booboo",
+	    "How are you today?",
+	    "I'm hungry. I'm going to eat you."
+	  })
 
   player = {
 				x = playerX,
@@ -64,7 +68,7 @@ function love.update(dt)
 	map:update(dt)
 	--Update player character
 	updateinstance(player.char, dt)
-	textUpdate(welcome, dt)
+	text:textUpdate(dt)
 
 	--update character position based on where player moves
 	--changes player animation through changing char element
@@ -130,7 +134,7 @@ function love.draw()
 		welcome:messageBox(player,wwidth,wheight)
 		love.graphics.rectangle("fill", messageBox.x, messageBox.y, messageBox.w, messageBox.h, 2, 2)
 	end]]
-	textDraw(welcome,player,wwidth,wheight)
+	text:textDraw(player,wwidth,wheight)
 end
 
 function love.quit()
