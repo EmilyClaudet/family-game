@@ -12,6 +12,6 @@ function love.conf(t)
 	t.author = "Claudet Family"
 	t.window.vsync = false
 	t.window.fsaa = 0
-	t.window.height = 600
-	t.window.width = 800
+	t.window.height = 768
+	t.window.width = 1024
 end
