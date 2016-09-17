@@ -3,6 +3,7 @@ textobj = {}
 
 function textobj:new(lines,decision)
   o = {
+    startlines = lines,
     lines = lines,
     numberofLines = #lines,
     color = {255,255,255},

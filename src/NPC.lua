@@ -37,7 +37,14 @@ end
 function NPC:turn(dir)
   self.facing = directions.dir
 end
+--[[
+function NPC:decide(player,key)
+  self.dialogue.curr_line = self.dialogue.numberofLines
+  self.dialogue.curr_let = string.len(self.dialogue.lines[self.dialogue.curr_line])
+  self.dialogue.drawdecisionbox = true
+end]]
 
+--VERY messy. Need to break down into smaller functions!
 function NPC:speak(player,key)
   if key == "space" and self.dialogue.drawdecisionbox then
     if player.cursor.yoff == 45 then
@@ -68,14 +75,17 @@ function NPC:speak(player,key)
           self.dialogue.drawdecisionbox = true
         else
           self.dialogue.start = false
+          self.dialogue.lines = self.dialogue.startlines
           self.dialogue.curr_line = 1
+          self.dialogue.isDecision = true
+          self.dialogue.numberofLines = #self.dialogue.lines
           player.control = true
         end
       end
-      --update last letter in line each time line is changed
-      --self.dialogue.curr_linelen = string.len(self.dialogue.lines[self.dialogue.curr_line])
     end
-  elseif key == "down" and self.dialogue.drawdecisionbox and player.cursor.movedown then
+  end
+
+  if key == "down" and self.dialogue.drawdecisionbox and player.cursor.movedown then
     player.cursor.yoff = player.cursor.yoff + 30
     player.cursor.movedown = false
     player.cursor.moveup = true
