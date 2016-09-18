@@ -44,8 +44,32 @@ function NPC:decide(player,key)
   self.dialogue.drawdecisionbox = true
 end]]
 
+function NPC:comment(player,key)
+  if key == "space" and checkcollision(player.dialoguebox, self.dialoguebox) then
+--    self.dialogue.lines = lines
+    self.dialogue.start = true
+    player.control = false
+    --checks if whole message has been typed. If player then presses space message goes to next line.
+    if self.dialogue.curr_let == self.dialogue.curr_linelen and key == "space" then
+      self.dialogue.curr_let = 0
+      self.dialogue.curr_line = self.dialogue.curr_line + 1
+      --if next line does not exist dialogue stops and current line reset for next dialogue triggered.
+      if self.dialogue.curr_line > self.dialogue.numberofLines then
+        self.dialogue.start = false
+        self.dialogue.curr_line = 1
+        player.control = true
+      end
+      self.dialogue.curr_linelen = string.len(self.dialogue.lines[self.dialogue.curr_line])
+    end
+
+  end
+
+end
+
+
+
 --VERY messy. Need to break down into smaller functions!
-function NPC:speak(player,key)
+function NPC:question(player,key)
   if key == "space" and self.dialogue.drawdecisionbox then
     if player.cursor.yoff == 45 then
       self.dialogue.lines = self.dialogue.topresponse

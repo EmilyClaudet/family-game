@@ -3,7 +3,8 @@ local bump = require "bump"
 local house = require "..res.maps.house"
 
 local player = require("player") --adds player class
-local textobj = require("textobj") --adds dialogue class
+local question = require("question") --adds dialogue class
+local comment = require("comment")
 local NPC = require("NPC") --adds NPC class
 
 local playerX = 160
@@ -33,11 +34,12 @@ function checkcollision(box1, box2)
 end
 
 --defines Emily as an NPC from data from the map. Will update when spritesheet comes
-function defineEmily(map)
+function defineNPCs(map)
 	for k, object in pairs(map.objects) do
 		if object.name == "Emily" then
 			emilyPos = {x = object.x, y = object.y}
-			emilydialogue = textobj:new({
+
+			emilydialogue = question:new({
 				"Hello my Booboo.",
 				"How are you today?",
 				"I'm hungry. Can I eat you?"
@@ -49,8 +51,19 @@ function defineEmily(map)
 				topresponse = {"Oh really?","I will come to get you soon then!"},
 				bottomresponse = {"But why not my Booboo?","You look so tasty."}
 			})
-			emily = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
+
+			emily = NPC:new(emilyPos.x,emilyPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
 		end
+
+    if object.name == "Catherine" then
+      catherinePos = {x = object.x, y = object.y}
+      catherinedialogue = comment:new({
+        "Won my leetal!",
+        "You are so precious my Boobooru desu ka."
+      })
+
+      catherine = NPC:new(catherinePos.x,catherinePos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,catherinedialogue)
+    end
 	end
 end
 
@@ -72,7 +85,7 @@ function love.load()
 		player.w,
 		player.h) --adds player as collidable object in world
 
-	defineEmily(map)
+	defineNPCs(map)
 end
 
 function love.update(dt)
@@ -82,6 +95,8 @@ function love.update(dt)
 	player:updateinstance(dt)
 	--Update text
 	emily.dialogue:textUpdate(dt)
+  catherine.dialogue:textUpdate(dt)
+
 	--update character position based on where player moves
 	--redefines player's collision box for dialogue depending on which way he faces
 	local dx,dy = 0,0
@@ -123,7 +138,8 @@ function love.keyreleased(key)
 	end
 	end
 
-	emily:speak(player,key)
+  catherine:comment(player,key)
+	emily:question(player,key)
 end
 
 function love.draw()
@@ -136,7 +152,8 @@ function love.draw()
   player:drawinstance()
 	-- Play music
 	--  music:play()
-	emilydialogue:textDraw(player,wwidth,wheight)
+	emily.dialogue:textDraw(player,wwidth,wheight)
+  catherine.dialogue:textDraw(player,wwidth,wheight)
 	--Draws text, including message box
 end
 
