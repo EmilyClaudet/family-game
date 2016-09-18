@@ -3,8 +3,8 @@ local bump = require "bump"
 local house = require "..res.maps.house"
 
 local player = require("player") --adds player class
-local question = require("question") --adds dialogue class
-local comment = require("comment")
+local question = require("question") --adds question class
+local comment = require("comment") --adds comment class
 local NPC = require("NPC") --adds NPC class
 
 local playerX = 160
@@ -45,7 +45,6 @@ function defineNPCs(map)
 				"I'm hungry. Can I eat you?"
 			},
 			{
-				on = true,
 				topchoice = "yes",
 				bottomchoice = "no",
 				topresponse = {"Oh really?","I will come to get you soon then!"},
@@ -64,6 +63,24 @@ function defineNPCs(map)
 
       catherine = NPC:new(catherinePos.x,catherinePos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,catherinedialogue)
     end
+
+    if object.name == "Christopher" then
+			christopherPos = {x = object.x, y = object.y}
+
+			christopherdialogue = question:new({
+				"MERLIN.",
+				"How is the demon dermon?"
+			},
+			{
+				topchoice = "good",
+				bottomchoice = "not good",
+				topresponse = {"Aww love this ever!"},
+				bottomresponse = {"Oh no why not ever?"}
+			})
+
+			christopher = NPC:new(christopherPos.x,christopherPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,christopherdialogue)
+		end
+
 	end
 end
 
@@ -96,6 +113,7 @@ function love.update(dt)
 	--Update text
 	emily.dialogue:textUpdate(dt)
   catherine.dialogue:textUpdate(dt)
+  christopher.dialogue:textUpdate(dt)
 
 	--update character position based on where player moves
 	--redefines player's collision box for dialogue depending on which way he faces
@@ -138,8 +156,9 @@ function love.keyreleased(key)
 	end
 	end
 
-  catherine:comment(player,key)
 	emily:question(player,key)
+  catherine:comment(player,key)
+  christopher:question(player,key)
 end
 
 function love.draw()
@@ -154,6 +173,7 @@ function love.draw()
 	--  music:play()
 	emily.dialogue:textDraw(player,wwidth,wheight)
   catherine.dialogue:textDraw(player,wwidth,wheight)
+  christopher.dialogue:textDraw(player,wwidth,wheight)
 	--Draws text, including message box
 end
 

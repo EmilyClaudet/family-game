@@ -15,7 +15,7 @@ function question:new(lines,decision)
     scroll_time = 0.1,
     start = false,
 
-    isDecision = decision.on,
+    isDecision = true,
     topchoice = decision.topchoice,
     bottomchoice = decision.bottomchoice,
     topresponse = decision.topresponse,
