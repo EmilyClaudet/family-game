@@ -3,7 +3,8 @@ local bump = require "bump"
 local house = require "..res.maps.house"
 
 local player = require("player") --adds player class
-local textobj = require("textobj") --adds dialogue class
+local question = require("question") --adds question class
+local comment = require("comment") --adds comment class
 local NPC = require("NPC") --adds NPC class
 
 local playerX = 160
@@ -33,17 +34,53 @@ function checkcollision(box1, box2)
 end
 
 --defines Emily as an NPC from data from the map. Will update when spritesheet comes
-function defineEmily(map)
+function defineNPCs(map)
 	for k, object in pairs(map.objects) do
 		if object.name == "Emily" then
 			emilyPos = {x = object.x, y = object.y}
-			emilydialogue = textobj:new({
-					"Hello my Booboo",
-					"How are you today?",
-					"I'm hungry. I'm going to eat you."
+
+			emilydialogue = question:new({
+				"Hello my Booboo.",
+				"How are you today?",
+				"I'm hungry. Can I eat you?"
+			},
+			{
+				topchoice = "yes",
+				bottomchoice = "no",
+				topresponse = {"Oh really?","I will come to get you soon then!"},
+				bottomresponse = {"But why not my Booboo?","You look so tasty."}
 			})
-			emily = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
+
+			emily = NPC:new(emilyPos.x,emilyPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
 		end
+
+    if object.name == "Catherine" then
+      catherinePos = {x = object.x, y = object.y}
+      catherinedialogue = comment:new({
+        "Won my leetal!",
+        "You are so precious my Boobooru desu ka."
+      })
+
+      catherine = NPC:new(catherinePos.x,catherinePos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,catherinedialogue)
+    end
+
+    if object.name == "Christopher" then
+			christopherPos = {x = object.x, y = object.y}
+
+			christopherdialogue = question:new({
+				"MERLIN.",
+				"How is the demon dermon?"
+			},
+			{
+				topchoice = "good",
+				bottomchoice = "not good",
+				topresponse = {"Aww love this ever!"},
+				bottomresponse = {"Oh no why not ever?"}
+			})
+
+			christopher = NPC:new(christopherPos.x,christopherPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,christopherdialogue)
+		end
+
 	end
 end
 
@@ -65,7 +102,7 @@ function love.load()
 		player.w,
 		player.h) --adds player as collidable object in world
 
-	defineEmily(map)
+	defineNPCs(map)
 end
 
 function love.update(dt)
@@ -75,6 +112,9 @@ function love.update(dt)
 	player:updateinstance(dt)
 	--Update text
 	emily.dialogue:textUpdate(dt)
+  catherine.dialogue:textUpdate(dt)
+  christopher.dialogue:textUpdate(dt)
+
 	--update character position based on where player moves
 	--redefines player's collision box for dialogue depending on which way he faces
 	local dx,dy = 0,0
@@ -116,23 +156,9 @@ function love.keyreleased(key)
 	end
 	end
 
---Updates which line NPC says
---[[	if key == "space" and checkcollision(player.dialoguebox, emilyNPC.dialoguebox) then
-		emilydialogue.start = true
-		player.control = false
-		if emilydialogue.curr_let == emilydialogue.curr_linelen and key == "space" then
-			emilydialogue.curr_let = 0
-			emilydialogue.curr_line = emilydialogue.curr_line + 1
-			if emilydialogue.curr_line > emilydialogue.numberofLines then
-				emilydialogue.start = false
-				emilydialogue.curr_line = 1
-				player.control = true
-			end
-			emilydialogue.curr_linelen = string.len(emilydialogue.lines[emilydialogue.curr_line])
-		end
-	end]]
-
-	emily:speak(player,key)
+	emily:question(player,key)
+  catherine:comment(player,key)
+  christopher:question(player,key)
 end
 
 function love.draw()
@@ -145,7 +171,9 @@ function love.draw()
   player:drawinstance()
 	-- Play music
 	--  music:play()
-	emilydialogue:textDraw(player,wwidth,wheight)
+	emily.dialogue:textDraw(player,wwidth,wheight)
+  catherine.dialogue:textDraw(player,wwidth,wheight)
+  christopher.dialogue:textDraw(player,wwidth,wheight)
 	--Draws text, including message box
 end
 

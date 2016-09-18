@@ -67,7 +67,8 @@ function player:new(image,speed,x,y,w,h,xoff,yoff)
       up = "up",
       control = true,
 
-      dialoguebox = {x = x, y = y + h, w = w, h = h} --defines area which player can interact with
+      dialoguebox = {x = x, y = y + h, w = w, h = h}, --defines area which player can interact with
+      cursor = {xoff = 160, yoff = 45, moveup = false, movedown = true}--cursor to show what choice player is over
     }
 
     setmetatable(o, self)
