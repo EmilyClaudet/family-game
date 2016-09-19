@@ -169,6 +169,7 @@ function love.draw()
   map:setDrawRange(5, 5, 256, 256)
   -- Draw player
   player:drawinstance()
+  map:drawLayer(map.layers["Foreground"])
 	-- Play music
 	--  music:play()
 	emily.dialogue:textDraw(player,wwidth,wheight)
