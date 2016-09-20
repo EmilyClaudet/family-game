@@ -1,11 +1,15 @@
 
 comment = {}
+local font = love.graphics.newFont("res/fonts/ARCADECLASSIC.TTF", 13)
 
-function comment:new(lines)
+function comment:new(lines,wwidth)
+  messageBoxW = wwidth/2 - 60
+  messageBoxH = 45
   o = {
     lines = lines,
     numberofLines = #lines,
     color = {255,255,255},
+    font = font,
 
     curr_line = 1,
     curr_let = 0,
@@ -13,6 +17,10 @@ function comment:new(lines)
     elapsed_time = 0,
     scroll_time = 0.1,
     start = false,
+
+    messageBoxW = messageBoxW,
+    messageBoxH = messageBoxH,
+    textLimit = messageBoxW - 40
   }
 
   setmetatable(o, self)
@@ -37,13 +45,17 @@ end
 function comment:textDraw(player,wwidth,wheight)
   if self.start then
     love.graphics.setColor(255,255,255,255)
-    messageBox = {x = player.x - wwidth/4 + 30, y = player.y + wheight/8, w = wwidth/2 - 60, h = 45}
+    messageBox = {x = player.x - wwidth/4 + 30, y = player.y + wheight/8, w = self.messageBoxW, h = self.messageBoxH}
     love.graphics.rectangle("fill",messageBox.x,messageBox.y,messageBox.w,messageBox.h,2,2)
 
     love.graphics.setColor(0,0,0,255)
     printedText = string.sub(self.lines[self.curr_line],0,self.curr_let)
-    love.graphics.print(printedText, player.x - wwidth/4 + 40, player.y + wheight/8 + 16)
 
+    totalWidth = font:getWidth(self.lines[self.curr_line])
+    totalHeight = math.ceil(totalWidth/self.textLimit)*font:getHeight(self.lines[self.curr_line])
+    startHeight = (self.messageBoxH - totalHeight)/2
+
+    love.graphics.printf(printedText, messageBox.x + 20, messageBox.y + startHeight, self.textLimit, "left")
     love.graphics.rectangle("line",messageBox.x,messageBox.y,messageBox.w,messageBox.h,2,2)
   end
 end
