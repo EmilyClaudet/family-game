@@ -98,7 +98,6 @@ function defineNPCs(map)
       mark = NPC:new(markPos.x,markPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,markdialogue)
     end
 
-
 	end
 end
 
