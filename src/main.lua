@@ -58,8 +58,8 @@ function defineNPCs(map)
       catherinePos = {x = object.x, y = object.y}
       catherinedialogue = comment:new({
         "Won my leetal!",
-        "You are so precious my Boobooru desu ka."
-      })
+        "You are so precious my Boobooru desu ka. Do you know how much I love this?"
+      },wwidth)
 
       catherine = NPC:new(catherinePos.x,catherinePos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,catherinedialogue)
     end
@@ -80,6 +80,23 @@ function defineNPCs(map)
 
 			christopher = NPC:new(christopherPos.x,christopherPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,christopherdialogue)
 		end
+
+    if object.name == "Mark" then
+      markPos = {x = object.x, y = object.y}
+
+      markdialogue = question:new({
+        "The smallest Anthony.",
+        "Did you gain weight?"
+      },
+      {
+        topchoice = "yes",
+        bottomchoice = "no",
+        topresponse = {"Well done the smallest.","I'm proud of you."},
+        bottomresponse = {"Oh but Anthony, why?","You must be fat."}
+      })
+
+      mark = NPC:new(markPos.x,markPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,markdialogue)
+    end
 
 	end
 end
@@ -114,6 +131,7 @@ function love.update(dt)
 	emily.dialogue:textUpdate(dt)
   catherine.dialogue:textUpdate(dt)
   christopher.dialogue:textUpdate(dt)
+  mark.dialogue:textUpdate(dt)
 
 	--update character position based on where player moves
 	--redefines player's collision box for dialogue depending on which way he faces
@@ -159,8 +177,23 @@ function love.keyreleased(key)
 	emily:question(player,key)
   catherine:comment(player,key)
   christopher:question(player,key)
+  mark:question(player,key)
 end
-
+--[[
+function drawNPCs(NPCs,player)
+  for NPC in NPCs do
+    if NPC.y > player.y then
+      NPC:draw()
+    end
+  end
+  player:draw()
+  for NPC in NPCs do
+    if NPC.y <= player.y then
+      NPC:draw()
+    end
+  end
+end
+]]
 function love.draw()
 	love.graphics.scale(scale)
 	love.graphics.translate( (wwidth/4 - player.x), (wheight/4 - player.y) )
@@ -175,6 +208,7 @@ function love.draw()
 	emily.dialogue:textDraw(player,wwidth,wheight)
   catherine.dialogue:textDraw(player,wwidth,wheight)
   christopher.dialogue:textDraw(player,wwidth,wheight)
+  mark.dialogue:textDraw(player,wwidth,wheight)
 	--Draws text, including message box
 end
 
