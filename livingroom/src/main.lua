@@ -6,6 +6,7 @@ local player = require("player") --adds player class
 local question = require("question") --adds question class
 local comment = require("comment") --adds comment class
 local NPC = require("NPC") --adds NPC class
+local dialogue = require("dialogue")
 
 local playerX = 160
 local playerY = 360
@@ -37,65 +38,23 @@ end
 function defineNPCs(map)
 	for k, object in pairs(map.objects) do
 		if object.name == "Emily" then
-			emilyPos = {x = object.x, y = object.y}
-
-			emilydialogue = question:new({
-				"Hello my Booboo.",
-				"How are you today?",
-				"I'm hungry. Can I eat you?"
-			},
-			{
-				topchoice = "yes",
-				bottomchoice = "no",
-				topresponse = {"Oh really?","I will come to get you soon then!"},
-				bottomresponse = {"But why not my Booboo?","You look so tasty."}
-			})
-
-			emily = NPC:new(emilyPos.x,emilyPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
+			emilydialogue = dialogue.emily
+			emily = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,emilydialogue)
 		end
 
     if object.name == "Catherine" then
-      catherinePos = {x = object.x, y = object.y}
-      catherinedialogue = comment:new({
-        "Won my leetal!",
-        "You are so precious my Boobooru desu ka. Do you know how much I love this?"
-      },wwidth)
-
-      catherine = NPC:new(catherinePos.x,catherinePos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,catherinedialogue)
+      catherinedialogue = dialogue.catherine
+      catherine = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,catherinedialogue)
     end
 
     if object.name == "Christopher" then
-			christopherPos = {x = object.x, y = object.y}
-
-			christopherdialogue = question:new({
-				"MERLIN.",
-				"How is the demon dermon?"
-			},
-			{
-				topchoice = "good",
-				bottomchoice = "not good",
-				topresponse = {"Aww love this ever!"},
-				bottomresponse = {"Oh no why not ever?"}
-			})
-
-			christopher = NPC:new(christopherPos.x,christopherPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,christopherdialogue)
+			christopherdialogue = dialogue.christopher
+			christopher = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,christopherdialogue)
 		end
 
     if object.name == "Mark" then
-      markPos = {x = object.x, y = object.y}
-
-      markdialogue = question:new({
-        "The smallest Anthony.",
-        "Did you gain weight?"
-      },
-      {
-        topchoice = "yes",
-        bottomchoice = "no",
-        topresponse = {"Well done the smallest.","I'm proud of you."},
-        bottomresponse = {"Oh but Anthony, why?","You must be fat."}
-      })
-
-      mark = NPC:new(markPos.x,markPos.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,markdialogue)
+      markdialogue = dialogue.mark
+      mark = NPC:new(object.x,object.y,NPCspeed,NPCoffsetx,NPCoffsety,NPCw,NPCh,markdialogue)
     end
 
 	end
@@ -174,10 +133,10 @@ function love.keyreleased(key)
 	end
 	end
 
-	emily:question(player,key)
-  catherine:comment(player,key)
-  christopher:question(player,key)
-  mark:question(player,key)
+	emily:speak(player,key)
+  catherine:speak(player,key)
+  christopher:speak(player,key)
+  mark:speak(player,key)
 end
 --[[
 function drawNPCs(NPCs,player)
@@ -205,10 +164,10 @@ function love.draw()
   map:drawLayer(map.layers["Foreground"])
 	-- Play music
 	--  music:play()
-	emily.dialogue:textDraw(player,wwidth,wheight)
-  catherine.dialogue:textDraw(player,wwidth,wheight)
-  christopher.dialogue:textDraw(player,wwidth,wheight)
-  mark.dialogue:textDraw(player,wwidth,wheight)
+	emily.dialogue:textDraw(player)
+  catherine.dialogue:textDraw(player)
+  christopher.dialogue:textDraw(player)
+  mark.dialogue:textDraw(player)
 	--Draws text, including message box
 end
 

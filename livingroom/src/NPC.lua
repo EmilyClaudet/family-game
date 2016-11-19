@@ -1,8 +1,17 @@
---NPC class for future use
 
+--NPC class for future use
 NPC = {}
 
 function NPC:new(x,y,v,xoff,yoff,w,h,dialogue) --will include spritesheet later
+  comment = require("comment")
+  question = require("question")
+
+  if dialogue.question then
+    dialogue = question:new(dialogue.lines,dialogue.decision)
+  else
+    dialogue = comment:new(dialogue.lines)
+  end
+
   directions = {
     down = love.graphics.newQuad(0, 0, 32, 32, 32, 96),
     up = love.graphics.newQuad(0, 32, 32, 32, 32, 96),
@@ -42,8 +51,11 @@ function NPC:comment(player,key)
   if key == "space" and checkcollision(player.dialoguebox, self.dialoguebox) then
     self.dialogue.start = true
     player.control = false
+    --if player presses space before message is typed out message automatically is typed
+    if self.dialogue.curr_let > 2 and self.dialogue.curr_let < self.dialogue.curr_linelen then
+      self.dialogue.curr_let = self.dialogue.curr_linelen
     --checks if whole message has been typed. If player then presses space message goes to next line.
-    if self.dialogue.curr_let == self.dialogue.curr_linelen then
+    elseif self.dialogue.curr_let == self.dialogue.curr_linelen then
       self.dialogue.curr_let = 0
       self.dialogue.curr_line = self.dialogue.curr_line + 1
       --if next line does not exist dialogue stops and current line reset for next dialogue triggered.
@@ -67,8 +79,11 @@ function NPC:question(player,key)
       if key == "space" then
         self.dialogue.start = true
         player.control = false
+        --if player presses space before message is typed out message automatically is typed
+        if self.dialogue.curr_let > 2 and self.dialogue.curr_let < string.len(self.dialogue.lines[self.dialogue.curr_line]) then
+          self.dialogue.curr_let = string.len(self.dialogue.lines[self.dialogue.curr_line])
         --checks if whole message has been typed. If player then presses space message goes to next line.
-        if self.dialogue.curr_let == string.len(self.dialogue.lines[self.dialogue.curr_line]) then
+        elseif self.dialogue.curr_let == string.len(self.dialogue.lines[self.dialogue.curr_line]) then
           self.dialogue.curr_let = 0
           self.dialogue.curr_line = self.dialogue.curr_line + 1
           --if next line does not exist dialogue stops and current line reset for next dialogue triggered.
@@ -86,6 +101,10 @@ function NPC:question(player,key)
               self.dialogue.isDecision = true
               self.dialogue.numberofLines = #self.dialogue.lines
               player.control = true
+              --reset cursor position and conditions
+              self.dialogue.cursorPosY = self.dialogue.topdecPosy+self.dialogue.cursorOffY
+              player.cursor.movedown = true
+              player.cursor.moveup = false
             end
           end
         end
@@ -93,7 +112,7 @@ function NPC:question(player,key)
     --when question is asked and player gives response with space the spoken lines are replaced with a response depending on position of the cursor.
     else
       if key == "space" then
-        if player.cursor.yoff == 45 then
+        if self.dialogue.cursorPosY == self.dialogue.topdecPosy+self.dialogue.cursorOffY then
           self.dialogue.lines = self.dialogue.topresponse
         else
           self.dialogue.lines = self.dialogue.bottomresponse
@@ -105,16 +124,24 @@ function NPC:question(player,key)
         self.dialogue.numberofLines = #self.dialogue.lines
       --when question is asked and player presses up or down to switch response
       elseif key == "down" and self.dialogue.drawdecisionbox and player.cursor.movedown then
-        player.cursor.yoff = player.cursor.yoff + 30
+        self.dialogue.cursorPosY = self.dialogue.cursorPosY + self.dialogue.decDiffy
         player.cursor.movedown = false
         player.cursor.moveup = true
       elseif key == "up" and self.dialogue.drawdecisionbox and player.cursor.moveup then
-        player.cursor.yoff = player.cursor.yoff - 30
+        self.dialogue.cursorPosY = self.dialogue.topdecPosy+self.dialogue.cursorOffY
         player.cursor.movedown = true
         player.cursor.moveup = false
       end
     end
 
+  end
+end
+
+function NPC:speak(player,key)
+  if self.dialogue.isQuestion then
+    self:question(player,key)
+  else
+    self:comment(player,key)
   end
 end
 
