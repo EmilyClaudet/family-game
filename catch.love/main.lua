@@ -8,6 +8,7 @@ local player = require("player")
 require "collision" --get collision functions
 
 --constants
+local scale = 1
 local wwidth = love.graphics.getWidth()
 local wheight = love.graphics.getHeight()
 local LOspeed = 150
@@ -20,8 +21,7 @@ local caught = 0
 local bed = {x = 32, y = 160, w = 96, h = 96}
 local gamestate = "play"
 
-local totalTime = 15
-local timeRemaining = 15
+local timeRemaining = 20
 local elapsedTime = 0
 
 --checks for any overlap between two boxes. Returns true if there is
@@ -222,6 +222,7 @@ function love.keyreleased(key)
 end
 
 function love.draw()
+  love.graphics.scale(scale)
   map:draw()
   player:drawinstance()
 
